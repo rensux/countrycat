@@ -37,6 +37,7 @@ I also renamed all instances of `FYR Macedonia` to `North Macedonia`.
 
 ### Step 4: Structuring the data
 There is not much to say here. Once the data has been read in I just add it all together to form the final output.  
+Reading the code is more explanatory here haha.  
 
 ---
 
