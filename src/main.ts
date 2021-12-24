@@ -1,25 +1,20 @@
-import { parse } from "csv/sync";
-import { readFileSync } from "fs";
+import { stringify } from "csv/sync";
+import { readFileSync, writeFileSync } from "fs";
+import { parseCsv } from "./util/read-data";
+import { genSeasons } from "./util/seasons";
+import { aggregateCountries, rowify } from "./util/structure-data";
+import { transpose } from "./util/transpose";
+import { Map } from "./util/types";
 
-const seasonFileMap = JSON.parse(readFileSync("data/season-map.json").toString())
-const seasonCategoriesMap = {}
+const seasons = genSeasons(18, (4*4) + 1)
+const seasonFileMap = JSON.parse(readFileSync("out/season-map.json").toString())
 
+const countryMap: Map = {}
 for (const season in seasonFileMap) {
-    seasonCategoriesMap[season] = parseCsv(seasonFileMap[season])
+    aggregateCountries(countryMap, seasons.indexOf(season), parseCsv(seasonFileMap[season]))
 }
 
-function parseCsv(filename):any {
-    const file = readFileSync("data/"+filename).toString()
-    return parse(file, {
-        columns: ["country", "category"],
-        relaxColumnCount: true,
-        skipRecordsWithEmptyValues: true,
-        onRecord: (record, _) => {
-            if (record["country"].includes("LBG") || record["country"].includes("Observer") || record["country"].includes("Fee Calculator") || !record["country"]) {
-                // console.log("removing: ", record);
-                return null
-            }
-            return record
-        }
-    })
-}
+const rows = rowify(countryMap, ["", ...seasons])
+const out: string = stringify(transpose(rows))
+
+writeFileSync("out/out.csv", out)
