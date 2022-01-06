@@ -1,4 +1,6 @@
-export function transpose(data: any[][]): any[][] {
+import { Row } from "./types"
+
+export function transpose(data: Row[]): Row[] {
     const transposed = []
     for (let i = 0; i < data[0].length; i++) {
         transposed[i] = []
